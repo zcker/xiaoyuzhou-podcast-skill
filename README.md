@@ -1,3 +1,6 @@
+如果对你有用，请我喝杯咖啡~Please Sponsor,thanks!
+![ce8cd8dcef7404adba482794bd7c2572](https://github.com/user-attachments/assets/88d01221-c495-4181-882b-c164e3efb666)
+
 # Xiaoyuzhou Podcast Skill
 
 自动下载小宇宙播客音频并生成完整转录文本的 Claude Code Skill。
