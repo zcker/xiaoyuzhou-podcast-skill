@@ -89,20 +89,37 @@ main() {
     echo "========================================"
     echo ""
 
-    # 步骤 1: 下载
-    echo_step "步骤 1/$total_steps: 下载音频和 Show Notes"
-    if ! "$SCRIPTS_DIR/download.sh" "$INPUT"; then
-        echo_warn "下载步骤出现问题，但继续执行..."
-    fi
-
-    # 提取 Episode ID
-    if [[ "$INPUT" =~ ^https?:// ]]; then
-        EPISODE_ID=$(echo "$INPUT" | grep -oE '[0-9a-f]{24}' | head -1)
+    # 解析输入：可以是目录路径、URL 或 Episode ID
+    if [ -d "$INPUT" ]; then
+        # 输入是目录路径
+        EPISODE_DIR="$INPUT"
+        CACHE_DIR="$EPISODE_DIR/.cache"
     else
-        EPISODE_ID="$INPUT"
-    fi
+        # 输入是 URL 或 Episode ID，需要先下载
+        echo_step "步骤 1/$total_steps: 下载音频和 Show Notes"
 
-    CACHE_DIR="$HOME/Podcasts/xiaoyuzhou/$EPISODE_ID/.cache"
+        # 调用 download.sh
+        DOWNLOAD_OUTPUT=$("$SCRIPTS_DIR/download.sh" "$INPUT" 2>&1)
+        DOWNLOAD_EXIT_CODE=$?
+
+        if [ $DOWNLOAD_EXIT_CODE -ne 0 ]; then
+            echo_warn "下载步骤出现问题，但继续执行..."
+        fi
+
+        # 从输出中提取目录路径（格式：===EPISODE_DIR:/path/to/dir===）
+        EPISODE_DIR=$(echo "$DOWNLOAD_OUTPUT" | grep "===EPISODE_DIR:" | sed 's/===EPISODE_DIR:\(.*\)===/\1/')
+
+        if [ -z "$EPISODE_DIR" ] || [ ! -d "$EPISODE_DIR" ]; then
+            echo "[ERROR] 未找到播客目录"
+            echo "[DEBUG] Download output: $DOWNLOAD_OUTPUT"
+            exit 1
+        fi
+
+        CACHE_DIR="$EPISODE_DIR/.cache"
+
+        echo ""
+        echo "下载完成，目录: $EPISODE_DIR"
+    fi
 
     # 查找音频文件
     AUDIO_FILE=$(find "$CACHE_DIR" -name "*.m4a" -o -name "*.mp3" 2>/dev/null | head -1)
@@ -127,13 +144,13 @@ main() {
 
     # 步骤 3: 合并
     echo_step "步骤 3/$total_steps: 合并 Show Notes 和转录文本"
-    if ! "$SCRIPTS_DIR/merge-and-clean.sh" "$EPISODE_ID"; then
+    if ! "$SCRIPTS_DIR/merge-and-clean.sh" "$EPISODE_DIR"; then
         echo_warn "合并步骤出现问题..."
     fi
 
     echo ""
 
-    FINAL_FILE="$HOME/Podcasts/xiaoyuzhou/$EPISODE_ID/README.md"
+    FINAL_FILE="$EPISODE_DIR/README.md"
 
     # 步骤 4: Notion 同步（可选）
     if [ "$sync_to_notion" = true ]; then

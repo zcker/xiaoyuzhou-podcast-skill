@@ -105,15 +105,30 @@ cleanup_cache() {
 # 主函数
 main() {
     if [ $# -lt 1 ]; then
-        echo "用法: $0 <Episode ID>"
+        echo "用法: $0 <Episode ID 或 目录路径>"
         echo ""
         echo "示例:"
         echo "  $0 6942f3e852d4707aaa1feba3"
+        echo "  $0 ~/Podcasts/xiaoyuzhou/E080-稳定币与RWA-虚实之间True Imagination-20250716"
         exit 1
     fi
 
-    EPISODE_ID="$1"
-    EPISODE_DIR="$HOME/Podcasts/xiaoyuzhou/$EPISODE_ID"
+    INPUT="$1"
+
+    # 判断输入是目录路径还是 Episode ID
+    if [ -d "$INPUT" ]; then
+        EPISODE_DIR="$INPUT"
+    else
+        EPISODE_ID="$INPUT"
+        # 尝试用 ID 查找目录（可能是新命名格式）
+        EPISODE_DIR=$(find "$HOME/Podcasts/xiaoyuzhou" -maxdepth 1 -type d -name "*$EPISODE_ID*" 2>/dev/null | head -1)
+
+        if [ -z "$EPISODE_DIR" ]; then
+            # 回退到旧格式
+            EPISODE_DIR="$HOME/Podcasts/xiaoyuzhou/$EPISODE_ID"
+        fi
+    fi
+
     CACHE_DIR="$EPISODE_DIR/.cache"
 
     if [ ! -d "$EPISODE_DIR" ]; then
@@ -130,7 +145,6 @@ main() {
     echo "文档合并与清理"
     echo "================================"
     echo ""
-    echo "Episode ID: $EPISODE_ID"
     echo "播客目录: $EPISODE_DIR"
     echo ""
 

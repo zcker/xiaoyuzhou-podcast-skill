@@ -16,6 +16,10 @@ echo_info() {
     echo -e "${GREEN}[INFO]${NC} $1"
 }
 
+echo_success() {
+    echo -e "${GREEN}[SUCCESS]${NC} $1"
+}
+
 echo_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
@@ -137,18 +141,48 @@ main() {
 
     download_podcast "$URL" "$CACHE_DIR"
 
-    # 查找下载的音频文件
+    # 查找下载的音频和 Markdown 文件
     AUDIO_FILE=$(find "$CACHE_DIR" -name "*.m4a" -o -name "*.mp3" | head -1)
+    SHOW_NOTES=$(find "$CACHE_DIR" -name "*.md" | head -1)
+
+    # 重命名目录为可读格式
+    if [ -f "$SHOW_NOTES" ]; then
+        echo ""
+        echo_info "正在重命名目录..."
+
+        SCRIPTS_DIR="$HOME/.claude/skills/xiaoyuzhou-podcast/scripts"
+        NEW_DIR_NAME=$("$SCRIPTS_DIR/format-dirname.sh" "$EPISODE_ID" "$SHOW_NOTES")
+
+        NEW_EPISODE_DIR="$OUTPUT_ROOT/$NEW_DIR_NAME"
+
+        # 检查目标目录是否已存在
+        if [ -d "$NEW_EPISODE_DIR" ] && [ "$NEW_EPISODE_DIR" != "$EPISODE_DIR" ]; then
+            echo_error "目标目录已存在: $NEW_EPISODE_DIR"
+            echo_info "保留原目录: $EPISODE_DIR"
+        else
+            # 重命名目录
+            mv "$EPISODE_DIR" "$NEW_EPISODE_DIR"
+            EPISODE_DIR="$NEW_EPISODE_DIR"
+            CACHE_DIR="$EPISODE_DIR/.cache"
+            AUDIO_FILE=$(find "$CACHE_DIR" -name "*.m4a" -o -name "*.mp3" | head -1)
+
+            echo_success "目录已重命名: $NEW_DIR_NAME"
+        fi
+    fi
 
     echo ""
-    echo_info "下载完成！"
+    echo_success "下载完成！"
     echo_info "音频文件: $AUDIO_FILE"
     echo ""
     echo_info "下一步: 运行转录脚本"
     echo "  python3 ~/.claude/skills/xiaoyuzhou-podcast/scripts/transcribe.py --audio \"$AUDIO_FILE\""
     echo ""
     echo_info "或者运行完整流程脚本（转录 + 合并 + 清理）："
-    echo "  ~/.claude/skills/xiaoyuzhou-podcast/scripts/process-podcast.sh $EPISODE_ID"
+    echo "  ~/.claude/skills/xiaoyuzhou-podcast/scripts/process-podcast.sh \"$EPISODE_DIR\""
+    echo ""
+
+    # 输出标记供其他脚本解析
+    echo "===EPISODE_DIR:$EPISODE_DIR==="
 }
 
 main "$@"

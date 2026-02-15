@@ -132,8 +132,23 @@ def sync_to_notion(notion_token, database_id, markdown_file, metadata=None):
         }
 
     if 'published_date' in metadata:
+        # 转换日期格式为 ISO 8601
+        date_str = metadata['published_date']
+        # 如果是中文格式 "2025年07月16日"，转换为 "2025-07-16"
+        if '年' in date_str:
+            import re
+            match = re.search(r'(\d{4})年(\d{2})月(\d{2})日', date_str)
+            if match:
+                date_str = f"{match.group(1)}-{match.group(2)}-{match.group(3)}"
+        # 如果有 published_at，使用它（已经是 ISO 格式）
+        elif 'published_at' in metadata:
+            date_str = metadata['published_at'].replace('.000Z', '').replace('"', '')
+
+        # 清理任何多余的引号和转义字符
+        date_str = date_str.strip('"').strip("'")
+
         properties["发布日期"] = {
-            "date": {"start": metadata['published_date']}
+            "date": {"start": date_str}
         }
 
     if 'duration_text' in metadata:
