@@ -10,6 +10,7 @@ import argparse
 import os
 import sys
 from pathlib import Path
+import time
 import torch
 from funasr import AutoModel
 
@@ -63,13 +64,30 @@ def transcribe_audio(audio_path, output_dir=None, hotword="", batch_size_s=300):
     print("[INFO] 正在加载 FunASR 模型...")
     print("[INFO] 首次运行会自动下载模型（约 2GB），请耐心等待...")
 
-    # 初始化模型
-    model = AutoModel(
-        model="paraformer-zh",       # 中文非流式模型
-        vad_model="fsmn-vad",        # 语音活动检测（去静音）
-        punc_model="ct-punc",        # 标点恢复
-        device=device,
-    )
+    # 检查磁盘空间
+    output_dir_path = Path(output_dir)
+    if not output_dir_path.exists():
+        output_dir_path.mkdir(parents=True, exist_ok=True)
+
+    # 初始化模型（带重试）
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            model = AutoModel(
+                model="paraformer-zh",       # 中文非流式模型
+                vad_model="fsmn-vad",        # 语音活动检测（去静音）
+                punc_model="ct-punc",        # 标点恢复
+                device=device,
+            )
+            break
+        except Exception as e:
+            if attempt < max_retries - 1:
+                print(f"[WARN] 模型加载失败 (尝试 {attempt + 1}/{max_retries}): {e}")
+                time.sleep(2)
+            else:
+                print(f"[ERROR] 模型加载失败: {e}")
+                print("[INFO] 请检查网络连接和磁盘空间")
+                sys.exit(1)
 
     print("[INFO] 模型加载完成")
     print(f"[INFO] 开始转录...")
@@ -78,12 +96,24 @@ def transcribe_audio(audio_path, output_dir=None, hotword="", batch_size_s=300):
     if hotword:
         print(f"[INFO] 热词: {hotword}")
 
-    # 进行转录
-    result = model.generate(
-        input=str(audio_path),
-        batch_size_s=batch_size_s,
-        hotword=hotword,
-    )
+    # 进行转录（带重试）
+    max_retries = 2
+    for attempt in range(max_retries):
+        try:
+            result = model.generate(
+                input=str(audio_path),
+                batch_size_s=batch_size_s,
+                hotword=hotword,
+            )
+            break
+        except Exception as e:
+            if attempt < max_retries - 1:
+                print(f"[WARN] 转录失败，正在重试 (尝试 {attempt + 1}/{max_retries}): {e}")
+                time.sleep(3)
+            else:
+                print(f"[ERROR] 转录失败: {e}")
+                print("[INFO] 请检查音频文件是否完整")
+                sys.exit(1)
 
     if not result:
         print("[ERROR] 转录失败，未返回结果")

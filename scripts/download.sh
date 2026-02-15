@@ -78,9 +78,23 @@ download_podcast() {
     echo_info "临时缓存: $cache_dir"
     echo ""
 
-    # 调用 xyz-dl，下载到缓存目录
+    # 调用 xyz-dl，下载到缓存目录（带重试）
     cd "$XYZDL_PATH"
-    uv run xyz-dl --mode both --dir "$cache_dir" "$url"
+    max_retries=3
+    for attempt in $(seq 1 $max_retries); do
+        if uv run xyz-dl --mode both --dir "$cache_dir" "$url"; then
+            # 下载成功
+            break
+        else
+            if [ $attempt -lt $max_retries ]; then
+                echo_warn "下载失败，正在重试 (尝试 $attempt/$max_retries)..."
+                sleep 5
+            else
+                echo_error "下载失败，已尝试 $max_retries 次"
+                exit 1
+            fi
+        fi
+    done
 
     # 检查下载结果
     echo ""

@@ -118,6 +118,46 @@ python3 ~/.claude/skills/xiaoyuzhou-podcast/scripts/transcribe.py \
 
 ## 高级用法
 
+### Notion 同步
+
+支持将转录文档同步到 Notion 数据库：
+
+```bash
+# 安装依赖
+pip3 install notion-client
+
+# 设置环境变量（推荐）
+export NOTION_TOKEN="your-integration-token"
+export NOTION_DATABASE_ID="your-database-id"
+
+# 使用 Notion 同步
+~/.claude/skills/xiaoyuzhou-podcast/scripts/process-podcast.sh <URL> --notion
+```
+
+**获取 Notion Token 和 Database ID：**
+
+1. **Integration Token**
+   - 访问 https://www.notion.so/my-integrations
+   - 创建新 Integration
+   - 复制 "Internal Integration Token"
+
+2. **Database ID**
+   - 在 Notion 中打开目标数据库
+   - 点击右上角 "..." → "Copy link"
+   - URL 格式: `https://www.notion.so/{workspace}?v={view_id}&p={DATABASE_ID}`
+   - 复制 DATABASE_ID 部分（32位字符）
+
+3. **授权数据库**
+   - 在 Notion 数据库页面点击 "..." → "Add connections"
+   - 选择你创建的 Integration
+
+**Notion 数据库建议字段：**
+- 标题
+- 主播
+- 发布日期
+- 时长
+- Episode URL (url)
+
 ### 热词优化
 
 提升特定术语识别准确度：
