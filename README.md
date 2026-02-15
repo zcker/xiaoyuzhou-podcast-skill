@@ -1,5 +1,8 @@
 如果对你有用，请我喝杯咖啡~Please Sponsor,thanks!
-![ce8cd8dcef7404adba482794bd7c2572](https://github.com/user-attachments/assets/88d01221-c495-4181-882b-c164e3efb666)
+开发该项目共使用 Token 价值～150 元
+<p align="left">
+  <img src="https://github.com/user-attachments/assets/88d01221-c495-4181-882b-c164e3efb666" alt="赞助/收款码" width="220" />
+</p>
 
 # Xiaoyuzhou Podcast Skill
 
@@ -90,7 +93,7 @@ python3 ~/.claude/skills/xiaoyuzhou-podcast/scripts/transcribe.py \
 
 每个 `README.md` 包含：
 
-1. **元数据** (YAML Front Matter)
+1. **元数��** (YAML Front Matter)
    - 标题、主播、时长
    - 发布日期、音频链接
    - Episode ID
@@ -222,7 +225,7 @@ python3 -c "import torch; print(torch.backends.mps.is_available())"
 ### 工作流程
 
 ```
-播客 URL/ID
+��客 URL/ID
     ↓
 xyz-dl 下载
     ↓
