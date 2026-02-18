@@ -71,36 +71,48 @@ Output structure:
 │       └── *.m4a                # 音频文件
 ```
 
-### Step 3: Generate Full Transcript
+### Step 3: Generate Full Transcript (Enhanced)
 
 ```bash
-python3 ~/.claude/skills/xiaoyuzhou-podcast/scripts/transcribe.py --audio <audio_path>
+python3 ~/.claude/skills/xiaoyuzhou-podcast/scripts/transcribe_enhanced.py --audio <audio_path>
 ```
+
+**New Features**:
+- ✅ **Speaker Diarization** - Automatically identify different speakers
+- ✅ **Smart Segmentation** - Intelligent paragraph breaks based on context
+- ✅ **Dialogue Formatting** - Structured conversation format with speaker labels
 
 Options:
 - `--audio`: Path to audio file (required)
 - `--output-dir`: Custom output directory
 - `--hotword`: Space-separated keywords to improve accuracy
-- `--batch-size`: Batch size in seconds (default: 300,适合 16GB 内存)
+- `--batch-size`: Batch size in seconds (default: 300)
+- `--no-diarization`: Disable speaker diarization
+- `--no-segmentation`: Disable smart segmentation
 
 Example:
 ```bash
-# Basic transcription
-python3 scripts/transcribe.py --audio ~/Research/Podcast/6942f3e852d4707aaa1feba3/.cache/podcast.m4a
+# Basic transcription with all enhancements
+python3 scripts/transcribe_enhanced.py --audio ~/Research/Podcast/6942f3e852d4707aaa1feba3/.cache/podcast.m4a
 
-# With hotwords for better accuracy
-python3 scripts/transcribe.py --audio podcast.m4a --hotword "投资 Fiserv 金融科技"
+# With hotwords
+python3 scripts/transcribe_enhanced.py --audio podcast.m4a --hotword "巴菲特 穆迪 投资理念"
 
-# Larger batch size for faster processing (requires more RAM)
-python3 scripts/transcribe.py --audio podcast.m4a --batch-size 600
+# Disable speaker diarization (faster)
+python3 scripts/transcribe_enhanced.py --audio podcast.m4a --no-diarization
 ```
 
 Output:
 ```
 ~/Research/Podcast/{id}_{host} - {title}/.cache/
-├── {id}_{host} - {title}.txt            # Full transcript
-└── {id}_{host} - {title}_timestamp.txt  # With timestamps
+├── {id}_{host} - {title}.txt              # Raw transcript
+├── {id}_{host} - {title}_formatted.md     # Enhanced version ⭐
+└── {id}_{host} - {title}_timestamp.txt    # With timestamps
 ```
+
+**Formatted Version Includes**:
+1. **Dialogue Record** - Speaker-labeled conversations (when diarization enabled)
+2. **Full Text** - Smart paragraph segmentation
 
 ### Step 4: Extract Structured Information
 

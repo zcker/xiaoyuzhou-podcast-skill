@@ -134,8 +134,8 @@ main() {
     echo ""
 
     # 步骤 2: 转录
-    echo_step "步骤 2/$total_steps: ASR 转录音频"
-    if ! python3 "$SCRIPTS_DIR/transcribe.py" --audio "$AUDIO_FILE"; then
+    echo_step "步骤 2/$total_steps: ASR 转录音频（增强版：说话人识别 + 智能分段）"
+    if ! python3 "$SCRIPTS_DIR/transcribe_enhanced.py" --audio "$AUDIO_FILE"; then
         echo "[ERROR] 转录失败"
         exit 1
     fi

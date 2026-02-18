@@ -36,8 +36,13 @@ merge_documents() {
         exit 1
     fi
 
-    # 查找转录文本文件
-    local transcript=$(find "$cache_dir" -name "*.txt" ! -name "*_timestamp.txt" | head -1)
+    # 查找转录文本文件（优先使用格式化版本）
+    local transcript=$(find "$cache_dir" -name "*_formatted.md" | head -1)
+
+    if [ -z "$transcript" ]; then
+        # 回退到普通文本
+        transcript=$(find "$cache_dir" -name "*.txt" ! -name "*_timestamp.txt" | head -1)
+    fi
 
     if [ -z "$transcript" ]; then
         echo_warn "未找到转录文本，仅复制 Show Notes"
