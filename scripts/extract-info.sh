@@ -120,10 +120,28 @@ main() {
     if [[ "$INPUT" =~ ^[0-9a-f]{24}$ ]]; then
         # Episode ID
         EPISODE_ID="$INPUT"
-        # 查找文件
-        SHOW_NOTES_PATH=$(find ~/Podcasts/xiaoyuzhou -name "${EPISODE_ID}_*.md" | head -1)
+        # 查找文件（新路径）
+        SHOW_NOTES_PATH=$(find ~/Documents/Podcasts -name "${EPISODE_ID}*" -type d | head -1)
+
         if [ -z "$SHOW_NOTES_PATH" ]; then
-            echo_error "未找到 Episode ID 为 $EPISODE_ID 的 Show Notes 文件"
+            # 兼容旧路径
+            SHOW_NOTES_PATH=$(find ~/Podcasts/xiaoyuzhou -name "${EPISODE_ID}*" -type d | head -1)
+        fi
+
+        if [ -z "$SHOW_NOTES_PATH" ]; then
+            echo_error "未找到 Episode ID 为 $EPISODE_ID 的播客目录"
+            exit 1
+        fi
+
+        # 查找 .cache 或目录中的 .md 文件
+        if [ -d "$SHOW_NOTES_PATH/.cache" ]; then
+            SHOW_NOTES_PATH=$(find "$SHOW_NOTES_PATH/.cache" -name "*.md" | head -1)
+        else
+            SHOW_NOTES_PATH=$(find "$SHOW_NOTES_PATH" -name "*.md" -maxdepth 1 | head -1)
+        fi
+
+        if [ -z "$SHOW_NOTES_PATH" ]; then
+            echo_error "未找到 Show Notes 文件"
             exit 1
         fi
     else

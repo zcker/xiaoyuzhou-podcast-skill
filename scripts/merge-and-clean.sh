@@ -79,27 +79,14 @@ cleanup_cache() {
 
     echo_info "正在清理临时文件..."
 
-    # 删除音频文件
-    find "$cache_dir" -name "*.m4a" -delete
-    find "$cache_dir" -name "*.mp3" -delete
-
-    # 删除转录文本（已合并）
-    find "$cache_dir" -name "*.txt" -delete
-
-    # 删除原始 Show Notes（已合并）
-    find "$cache_dir" -name "*.md" -delete
-
-    # 如果缓存目录为空，删除目录
-    if [ -z "$(ls -A "$cache_dir")" ]; then
-        rmdir "$cache_dir"
-        echo_info "缓存目录已清理"
+    # 删除整个 .cache 目录
+    if [ -d "$cache_dir" ]; then
+        rm -rf "$cache_dir"
+        echo_info "缓存目录已完全删除: $cache_dir"
+        echo_info "已节省音频和临时文件占用空间"
     else
-        echo_info "缓存目录仍包含文件，保留："
-        ls -lh "$cache_dir"
+        echo_info "缓存目录不存在，无需清理"
     fi
-
-    # 统计节省的空间
-    echo_info "已删除音频和临时文件，节省空间"
 }
 
 # 主函数
@@ -121,11 +108,11 @@ main() {
     else
         EPISODE_ID="$INPUT"
         # 尝试用 ID 查找目录（可能是新命名格式）
-        EPISODE_DIR=$(find "$HOME/Podcasts/xiaoyuzhou" -maxdepth 1 -type d -name "*$EPISODE_ID*" 2>/dev/null | head -1)
+        EPISODE_DIR=$(find "$HOME/Documents/Podcasts" -maxdepth 1 -type d -name "*$EPISODE_ID*" 2>/dev/null | head -1)
 
         if [ -z "$EPISODE_DIR" ]; then
-            # 回退到旧格式
-            EPISODE_DIR="$HOME/Podcasts/xiaoyuzhou/$EPISODE_ID"
+            # 回退到旧格式（兼容）
+            EPISODE_DIR="$HOME/Documents/Podcasts/$EPISODE_ID"
         fi
     fi
 

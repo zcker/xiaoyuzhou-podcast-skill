@@ -63,10 +63,12 @@ scripts/download.sh 6942f3e852d4707aaa1feba3 ~/MyPodcasts
 
 Output structure:
 ```
-~/Podcasts/xiaoyuzhou/
-├── {id}_{host} - {title}.md       # Show notes with metadata
-└── audio/
-    └── {id}_{host} - {title}.m4a  # Audio file
+~/Documents/Podcasts/
+├── {id}_{host} - {title}/       # 播客目录
+│   ├── README.md                # 最终合并文档（Show Notes + 转录）
+│   └── .cache/                  # 临时缓存（处理后自动删除）
+│       ├── *.md                 # Show Notes
+│       └── *.m4a                # 音频文件
 ```
 
 ### Step 3: Generate Full Transcript
@@ -84,7 +86,7 @@ Options:
 Example:
 ```bash
 # Basic transcription
-python3 scripts/transcribe.py --audio ~/Podcasts/xiaoyuzhou/audio/podcast.m4a
+python3 scripts/transcribe.py --audio ~/Documents/Podcasts/6942f3e852d4707aaa1feba3/.cache/podcast.m4a
 
 # With hotwords for better accuracy
 python3 scripts/transcribe.py --audio podcast.m4a --hotword "投资 Fiserv 金融科技"
@@ -95,7 +97,7 @@ python3 scripts/transcribe.py --audio podcast.m4a --batch-size 600
 
 Output:
 ```
-~/Podcasts/xiaoyuzhou/transcripts/
+~/Documents/Podcasts/{id}_{host} - {title}/.cache/
 ├── {id}_{host} - {title}.txt            # Full transcript
 └── {id}_{host} - {title}_timestamp.txt  # With timestamps
 ```
@@ -168,9 +170,8 @@ Total disk usage: ~2GB (first-time download)
 - Episode ID: {id}
 
 **Files:**
-- Show Notes: ~/Podcasts/xiaoyuzhou/{id}_{host} - {title}.md
-- Audio: ~/Podcasts/xiaoyuzhou/audio/{id}_{host} - {title}.m4a
-- Transcript: ~/Podcasts/xiaoyuzhou/transcripts/{id}_{host} - {title}.txt
+- Final Document: ~/Documents/Podcasts/{id}_{host} - {title}/README.md
+- (Cache files deleted after processing)
 
 **Transcript Statistics:**
 - Word count: {count}
@@ -258,9 +259,7 @@ Assistant: I'll help you download and transcribe this podcast. Let me start by r
 - Episode ID: 6942f3e852d4707aaa1feba3
 
 **Files:**
-- Show Notes: ~/Podcasts/xiaoyuzhou/6942f3e852d4707aaa1feba3_鹅先知...md
-- Audio: ~/Podcasts/xiaoyuzhou/audio/6942f3e852d4707aaa1feba3_鹅先知...m4a
-- Transcript: ~/Podcasts/xiaoyuzhou/transcripts/6942f3e852d4707aaa1feba3_鹅先知...txt
+- Final Document: ~/Documents/Podcasts/6942f3e852d4707aaa1feba3_鹅先知.../README.md
 
 **Transcript Preview:**
 大家好，欢迎收听本期节目。今天我们邀请了MIT博士...
