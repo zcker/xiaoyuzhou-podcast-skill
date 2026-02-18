@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 格式化播客目录名：序号-主题-节目名-日期
+# 格式化播客目录名：日期_节目名-E序号-主题_EpisodeID
 
 set -e
 
@@ -43,22 +43,30 @@ extract_metadata() {
 
     EPISODE_NUMBER=$(echo "$TITLE" | grep -oE '^[A-Z]?[0-9]+' | head -1)
 
-    # 提取主题（序号后的第一个冒号或空格前的内容）
-    TOPIC=$(echo "$TITLE" | sed "s/^${EPISODE_NUMBER} //" | sed 's/：.*//' | sed 's/:.*//' | sed 's/ /-/g')
+    # 提取主题（序号后的第一个冒号或竖线前的内容）
+    # 支持 "E080 主题：副标题" 和 "27 | 主题 - 副标题" 格式
+    TOPIC=$(echo "$TITLE" | sed "s/^${EPISODE_NUMBER} //" | sed 's/ |.*//' | sed 's/：.*//' | sed 's/:.*//' | sed 's/ -.*//')
 
     # 格式化日期（从 "2025年07月16日" 到 "20250716"）
     FORMATTED_DATE=$(echo "$PUBLISHED_DATE" | grep -oE '[0-9]{4}年[0-9]{2}月[0-9]{2}日' | sed 's/年//;s/月//;s/日//')
 
-    # 清理节目名中的特殊字符
-    CLEAN_PODCAST_NAME=$(echo "$PODCAST_NAME" | sed 's/ /-/g' | sed 's/[():]//g')
+    # 清理节目名中的特殊字符（保留中文）
+    CLEAN_PODCAST_NAME=$(echo "$PODCAST_NAME" | sed 's/ | /-/g' | sed 's/ /-/g' | sed 's/[|():]//g')
 
-    # 生成目录名
-    if [ -n "$EPISODE_NUMBER" ] && [ -n "$TOPIC" ]; then
-        NEW_DIR_NAME="${EPISODE_NUMBER}-${TOPIC}-${CLEAN_PODCAST_NAME}-${FORMATTED_DATE}"
+    # 清理主题中的特殊字符（保留中文）
+    CLEAN_TOPIC=$(echo "$TOPIC" | sed 's/ /-/g' | sed 's/[|():]//g' | sed 's/^-*//' | sed 's/-*$//')
+
+    # 生成目录名：日期_节目名-E序号-主题
+    if [ -n "$EPISODE_NUMBER" ] && [ -n "$CLEAN_TOPIC" ] && [ ${#CLEAN_TOPIC} -gt 0 ]; then
+        # 确保序号有 E 前缀
+        if [[ ! "$EPISODE_NUMBER" =~ ^E ]]; then
+            EPISODE_NUMBER="E${EPISODE_NUMBER}"
+        fi
+        NEW_DIR_NAME="${FORMATTED_DATE}_${CLEAN_PODCAST_NAME}-${EPISODE_NUMBER}-${CLEAN_TOPIC}"
     else
         # 如果无法提取序号和主题，使用原标题
-        CLEAN_TITLE=$(echo "$TITLE" | sed 's/ /-/g' | sed 's/[():]//g')
-        NEW_DIR_NAME="${CLEAN_TITLE}-${FORMATTED_DATE}"
+        CLEAN_TITLE=$(echo "$TITLE" | sed 's/ /-/g' | sed 's/[|():]//g')
+        NEW_DIR_NAME="${FORMATTED_DATE}_${CLEAN_TITLE}"
     fi
 
     echo "$NEW_DIR_NAME"
