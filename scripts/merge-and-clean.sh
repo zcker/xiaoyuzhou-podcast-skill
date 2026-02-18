@@ -28,8 +28,8 @@ merge_documents() {
     local cache_dir="$episode_dir/.cache"
     local output_file="$episode_dir/README.md"
 
-    # 查找 Show Notes 文件
-    local show_notes=$(find "$cache_dir" -name "*.md" | head -1)
+    # 查找 Show Notes 文件（排除格式化的转录文件）
+    local show_notes=$(find "$cache_dir" -name "*.md" ! -name "*_formatted.md" | head -1)
 
     if [ -z "$show_notes" ]; then
         echo_error "未找到 Show Notes 文件"
