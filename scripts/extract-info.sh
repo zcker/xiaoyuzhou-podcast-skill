@@ -121,7 +121,7 @@ main() {
         # Episode ID
         EPISODE_ID="$INPUT"
         # 查找文件（新路径）
-        SHOW_NOTES_PATH=$(find ~/Documents/Podcasts -name "${EPISODE_ID}*" -type d | head -1)
+        SHOW_NOTES_PATH=$(find ~/Research/Podcast -name "${EPISODE_ID}*" -type d | head -1)
 
         if [ -z "$SHOW_NOTES_PATH" ]; then
             # 兼容旧路径

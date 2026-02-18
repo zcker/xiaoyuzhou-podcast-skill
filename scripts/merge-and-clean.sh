@@ -108,11 +108,11 @@ main() {
     else
         EPISODE_ID="$INPUT"
         # 尝试用 ID 查找目录（可能是新命名格式）
-        EPISODE_DIR=$(find "$HOME/Documents/Podcasts" -maxdepth 1 -type d -name "*$EPISODE_ID*" 2>/dev/null | head -1)
+        EPISODE_DIR=$(find "$HOME/Research/Podcast" -maxdepth 1 -type d -name "*$EPISODE_ID*" 2>/dev/null | head -1)
 
         if [ -z "$EPISODE_DIR" ]; then
             # 回退到旧格式（兼容）
-            EPISODE_DIR="$HOME/Documents/Podcasts/$EPISODE_ID"
+            EPISODE_DIR="$HOME/Research/Podcast/$EPISODE_ID"
         fi
     fi
 

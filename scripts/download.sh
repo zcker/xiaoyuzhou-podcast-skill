@@ -116,7 +116,7 @@ main() {
     fi
 
     INPUT="$1"
-    OUTPUT_ROOT="${2:-$HOME/Documents/Podcasts}"
+    OUTPUT_ROOT="${2:-$HOME/Research/Podcast}"
 
     parse_input "$INPUT"
 

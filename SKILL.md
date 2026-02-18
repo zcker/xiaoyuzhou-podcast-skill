@@ -63,7 +63,7 @@ scripts/download.sh 6942f3e852d4707aaa1feba3 ~/MyPodcasts
 
 Output structure:
 ```
-~/Documents/Podcasts/
+~/Research/Podcast/
 ├── {id}_{host} - {title}/       # 播客目录
 │   ├── README.md                # 最终合并文档（Show Notes + 转录）
 │   └── .cache/                  # 临时缓存（处理后自动删除）
@@ -86,7 +86,7 @@ Options:
 Example:
 ```bash
 # Basic transcription
-python3 scripts/transcribe.py --audio ~/Documents/Podcasts/6942f3e852d4707aaa1feba3/.cache/podcast.m4a
+python3 scripts/transcribe.py --audio ~/Research/Podcast/6942f3e852d4707aaa1feba3/.cache/podcast.m4a
 
 # With hotwords for better accuracy
 python3 scripts/transcribe.py --audio podcast.m4a --hotword "投资 Fiserv 金融科技"
@@ -97,7 +97,7 @@ python3 scripts/transcribe.py --audio podcast.m4a --batch-size 600
 
 Output:
 ```
-~/Documents/Podcasts/{id}_{host} - {title}/.cache/
+~/Research/Podcast/{id}_{host} - {title}/.cache/
 ├── {id}_{host} - {title}.txt            # Full transcript
 └── {id}_{host} - {title}_timestamp.txt  # With timestamps
 ```
@@ -170,7 +170,7 @@ Total disk usage: ~2GB (first-time download)
 - Episode ID: {id}
 
 **Files:**
-- Final Document: ~/Documents/Podcasts/{id}_{host} - {title}/README.md
+- Final Document: ~/Research/Podcast/{id}_{host} - {title}/README.md
 - (Cache files deleted after processing)
 
 **Transcript Statistics:**
@@ -259,7 +259,7 @@ Assistant: I'll help you download and transcribe this podcast. Let me start by r
 - Episode ID: 6942f3e852d4707aaa1feba3
 
 **Files:**
-- Final Document: ~/Documents/Podcasts/6942f3e852d4707aaa1feba3_鹅先知.../README.md
+- Final Document: ~/Research/Podcast/6942f3e852d4707aaa1feba3_鹅先知.../README.md
 
 **Transcript Preview:**
 大家好，欢迎收听本期节目。今天我们邀请了MIT博士...
